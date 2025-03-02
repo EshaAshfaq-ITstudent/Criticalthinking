@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Text Extractor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+           
+            background-color: rgb(215, 187, 149);
+            background-size: cover;
+            text-align: center;
+            color: white;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 60%;
+            margin: auto;
+            margin-top: 50px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+        }
+        h1 {
+            font-size: 24px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #e67e22;
+        }
+        .output {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Text Extractor & Formatter</h1>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="extractText()">Extract & Format</button>
+        <div class="output">
+            <h2>Original Extracted Text:</h2>
+            <p id="unarrangedText"></p>
+            <h2>Formatted Text:</h2>
+            <p id="correctedText"></p>
+        </div>
+    </div>
+    <script>
+      function extractText() {
+          let imageInput = document.getElementById('imageInput').files[0];
+          if (!imageInput) {
+              alert("Please upload an image first!");
+              return;
+          }
+  
+          Tesseract.recognize(
+              imageInput,
+              'eng',
+              { logger: m => console.log(m) }
+          ).then(({ data: { text } }) => {
+              let extractedText = text.replace(/[^a-zA-Z\s]/g, ""); // Remove symbols
+              let words = extractedText.split(/\s+/).map(word => correctSpelling(word.toLowerCase()));
+  
+              let formattedText = words
+                  .map((word, index) => index === 0 ? capitalize(word) : word)
+                  .join(" ");
+  
+              let userInfo = `Name: Esha Ashfaq\nRoll No: 02-235232-002\nSubject: Critical Thinking\nClass: BS IT 4 A\n\n`;
+  
+              document.getElementById('unarrangedText').innerText = extractedText;
+              document.getElementById('correctedText').innerText = userInfo + formattedText;
+          });
+      }
+  
+      function correctSpelling(word) {
+          const dictionary = {
+              "tshe": "the",
+              "intelleutaiy": "intellectual",
+              "disciplineid": "disciplined",
+              "prosces": "process",
+              "sillfulsy": "skillfully",
+              "coincesptualtsziing": "conceptualizing",
+              "applysinsg": "applying",
+              "analyzsing": "analyzing",
+              "syntheszing": "synthesizing",
+              "evalu": "evaluate",
+              "sating": "stating",
+              "infor smatison": "information",
+              "gathseresd": "gathered",
+              "frosm": "from",
+              "otr": "or",
+              "gsesnserated": "generated",
+              "bsy": "by",
+              "observastiion": "observation",
+              "exp sertieinsce": "experience",
+              "rifeitlesctsion": "reflection",
+              "rifeasonisng": "reasoning",
+              "chomsmsunication": "communication",
+              "gsuisde": "guide",
+              "tso": "to",
+              "belisef": "belief",
+              "aticitsiton": "action"
+          };
+          return dictionary[word] || word;
+      }
+  
+      function capitalize(word) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+  </script>
+  
+</body>
+</html>
